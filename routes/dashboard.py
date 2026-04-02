@@ -1,6 +1,4 @@
-# ============================================================
-#  UniGrant — routes/dashboard.py
-# ============================================================
+
 from flask import Blueprint, render_template, jsonify, request, session, redirect, url_for
 from db import query
 
