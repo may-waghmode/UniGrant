@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>UniGrant — Reviewer Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Inter',sans-serif;background:#FAFAFA;color:#1F2937;min-height:100vh}
+
+    /* NAVBAR */
+    .navbar{background:#FFFFFF;border-bottom:1px solid #F3F4F6;padding:0 28px;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
+    .nav-brand{display:flex;align-items:center;gap:10px}
+    .nav-icon{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#3B82F6,#6366F1);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;color:#fff}
+    .nav-title{font-weight:700;font-size:15px;color:#111827}
+    .nav-subtitle{font-size:10px;color:#9CA3AF;margin-top:1px}
+    .nav-right{display:flex;align-items:center;gap:12px}
+    .user-badge{background:#EFF6FF;border:1px solid #93C5FD;padding:6px 14px;border-radius:20px;font-size:12px;color:#2563EB;font-weight:600;display:flex;align-items:center;gap:6px}
+    .user-dot{width:7px;height:7px;border-radius:50%;background:#3B82F6}
+    .btn-signout{background:none;border:1px solid #E5E7EB;color:#6B7280;padding:6px 14px;border-radius:8px;font-size:11px;cursor:pointer;font-family:'Inter',sans-serif;font-weight:500;transition:all .2s}
+    .btn-signout:hover{border-color:#EF4444;color:#DC2626}
+
+    .main{padding:28px}
+    .page-header{margin-bottom:24px}
+    .page-title{font-size:22px;font-weight:800;color:#111827;letter-spacing:-0.3px}
+    .page-sub{font-size:13px;color:#6B7280;margin-top:4px}
+
+    /* STATS ROW */
+    .stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:24px}
+    .stat-card{background:#FFFFFF;border:1px solid #F3F4F6;border-radius:14px;padding:18px 20px;box-shadow:0 1px 3px rgba(0,0,0,0.04);transition:all .2s}
+    .stat-card:hover{border-color:#E5E7EB;box-shadow:0 3px 10px rgba(0,0,0,0.06)}
+    .stat-label{font-size:10px;font-weight:700;color:#6B7280;letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px}
+    .stat-value{font-size:30px;font-weight:800;letter-spacing:-0.5px}
+    .stat-sub{font-size:11px;color:#9CA3AF;margin-top:4px}
+    .orange{color:#EA580C}.green{color:#059669}.purple{color:#7C3AED}
+
+    /* GRID */
+    .grid{display:grid;grid-template-columns:1.6fr 1fr;gap:16px;align-items:start}
+
+    /* CARDS */
+    .card{background:#FFFFFF;border:1px solid #F3F4F6;border-radius:16px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
+    .card-head{padding:14px 20px;border-bottom:1px solid #F3F4F6;display:flex;align-items:center;justify-content:space-between;background:linear-gradient(135deg,#FAFAFA,#FFFFFF)}
+    .card-title{font-size:14px;font-weight:700;color:#111827}
+
+    /* PROPOSAL CARDS */
+    .prop-list{padding:14px;display:flex;flex-direction:column;gap:12px;max-height:70vh;overflow-y:auto}
+    .prop-card{background:#FFFFFF;border:1px solid #F3F4F6;border-radius:14px;padding:16px;transition:all .2s}
+    .prop-card:hover{border-color:#FDBA74;box-shadow:0 3px 12px rgba(249,115,22,0.06)}
+    .prop-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:6px}
+    .prop-title{font-size:14px;font-weight:700;color:#111827}
+    .prop-meta{font-size:11px;color:#6B7280;margin-bottom:8px;line-height:1.6}
+    .prop-budget{font-size:15px;font-weight:800;color:#EA580C;margin-bottom:12px}
+    .prop-desc{font-size:12px;color:#4B5563;margin-bottom:12px;line-height:1.6;background:#FAFAFA;padding:10px 12px;border-radius:8px;border:1px solid #F3F4F6}
+    .prop-actions{display:flex;flex-direction:column;gap:8px}
+    .action-row{display:flex;gap:8px;align-items:center}
+    input.amt,input.rmk{flex:1;padding:9px 12px;background:#FAFAFA;border:1.5px solid #E5E7EB;border-radius:8px;color:#1F2937;font-family:'Inter',sans-serif;font-size:12px;outline:none;transition:all .2s}
+    input.amt:focus,input.rmk:focus{border-color:#F97316;box-shadow:0 0 0 3px rgba(249,115,22,0.08);background:#fff}
+    .btn-approve{background:#ECFDF5;color:#059669;border:1.5px solid #6EE7B7;padding:9px 18px;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;transition:all .2s;white-space:nowrap}
+    .btn-approve:hover{background:#D1FAE5;border-color:#34D399}
+    .btn-reject{background:#FEF2F2;color:#DC2626;border:1.5px solid #FCA5A5;padding:9px 18px;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;transition:all .2s;white-space:nowrap}
+    .btn-reject:hover{background:#FEE2E2;border-color:#F87171}
+
+    /* RIGHT COLUMN */
+    .right-col{display:flex;flex-direction:column;gap:16px}
+
+    /* HISTORY */
+    .history-list{padding:14px;display:flex;flex-direction:column;gap:10px;max-height:35vh;overflow-y:auto}
+    .hist-entry{background:#fff;border:1px solid #F3F4F6;border-radius:10px;padding:12px 14px;transition:all .2s}
+    .hist-entry:hover{border-color:#E5E7EB}
+    .hist-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
+    .hist-title{font-size:13px;color:#111827;font-weight:600}
+    .hist-meta{font-size:11px;color:#4B5563;line-height:1.5}
+
+    /* AUDIT */
+    .audit-list{padding:14px;display:flex;flex-direction:column;gap:8px;max-height:30vh;overflow-y:auto}
+    .audit-entry{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid #F9FAFB}
+    .audit-entry:last-child{border-bottom:none}
+    .audit-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:4px}
+    .audit-action{font-size:12px;color:#111827;font-weight:600}
+    .audit-detail{font-size:10px;color:#6B7280;margin-top:2px}
+    .audit-time{font-size:10px;color:#9CA3AF;flex-shrink:0;margin-top:2px;white-space:nowrap}
+
+    /* BADGES */
+    .badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:6px;font-size:10px;font-weight:700;letter-spacing:.03em}
+    .badge-approved{background:#ECFDF5;color:#059669;border:1px solid #6EE7B7}
+    .badge-rejected{background:#FEF2F2;color:#DC2626;border:1px solid #FCA5A5}
+    .badge-pending{background:#FFF7ED;color:#EA580C;border:1px solid #FDBA74}
+
+    .empty{padding:32px;text-align:center;color:#9CA3AF;font-size:12px}
+
+    /* TOAST */
+    .toast{position:fixed;bottom:24px;right:24px;background:#111827;color:#F9FAFB;padding:12px 20px;border-radius:12px;font-size:13px;font-weight:500;z-index:999;opacity:0;transition:all .3s;transform:translateY(10px);pointer-events:none;box-shadow:0 8px 24px rgba(0,0,0,0.15)}
+    .toast.show{opacity:1;transform:translateY(0)}
+    .toast.success{border-left:4px solid #22C55E}
+    .toast.error{border-left:4px solid #EF4444}
+
+    ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:#FAFAFA}::-webkit-scrollbar-thumb{background:#D1D5DB;border-radius:4px}
+    @media(max-width:960px){.grid{grid-template-columns:1fr}.stats-row{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="nav-brand">
+    <div class="nav-icon">R</div>
+    <div><div class="nav-title">UniGrant</div><div class="nav-subtitle">Reviewer Dashboard</div></div>
+  </div>
+  <div class="nav-right">
+    <div class="user-badge"><div class="user-dot"></div><span id="nav-name">Loading...</span></div>
+    <button class="btn-signout" onclick="logout()">Sign out</button>
+  </div>
+</nav>
+
+<main class="main">
+  <div class="page-header">
+    <h1 class="page-title" id="welcome-title">Reviewer Panel</h1>
+    <p class="page-sub">Review proposals assigned to you and manage grant approvals</p>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats-row">
+    <div class="stat-card"><div class="stat-label">Pending for Review</div><div class="stat-value orange" id="s-pending">—</div><div class="stat-sub">awaiting your decision</div></div>
+    <div class="stat-card"><div class="stat-label">Approved by You</div><div class="stat-value green" id="s-approved">—</div><div class="stat-sub">proposals approved</div></div>
+    <div class="stat-card"><div class="stat-label">Rejected by You</div><div class="stat-value purple" id="s-rejected">—</div><div class="stat-sub">proposals rejected</div></div>
+  </div>
+
+  <div class="grid">
+    <!-- LEFT: PENDING PROPOSALS -->
+    <div class="card">
+      <div class="card-head"><span class="card-title">📋 Proposals Assigned To You</span></div>
+      <div class="prop-list" id="pending-list">
+        <div class="empty">Loading pending proposals...</div>
+      </div>
+    </div>
+
+    <!-- RIGHT COLUMN -->
+    <div class="right-col">
+      <!-- HISTORY -->
+      <div class="card">
+        <div class="card-head"><span class="card-title">📜 Decision History</span></div>
+        <div class="history-list" id="history-list"><div class="empty">Loading...</div></div>
+      </div>
+      <!-- AUDIT LOG -->
+      <div class="card">
+        <div class="card-head"><span class="card-title">🔍 Audit Log</span></div>
+        <div class="audit-list" id="audit-list"><div class="empty">Loading...</div></div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  const reviewerId = localStorage.getItem('ug_id');
+  const name       = localStorage.getItem('ug_name');
+
+  if (!reviewerId || localStorage.getItem('ug_role') !== 'reviewer') {
+    window.location.href = '/';
+  }
+
+  document.getElementById('nav-name').textContent      = name;
+  document.getElementById('welcome-title').textContent  = 'Welcome, ' + name;
+
+  const fmt = n => n ? '₹' + (n/100000).toFixed(1) + 'L' : '—';
+
+  function showToast(msg, type='success') {
+    const t = document.getElementById('toast');
+    t.textContent = msg; t.className = 'toast show ' + type;
+    setTimeout(() => t.className = 'toast', 3500);
+  }
+
+  // ── Pending proposals ──────────────────────────────────────
+  async function loadPending() {
+    const list = document.getElementById('pending-list');
+    try {
+      const res  = await fetch('/api/reviewer/pending?reviewer_id=' + reviewerId);
+      const rows = await res.json();
+      document.getElementById('s-pending').textContent = rows.length;
+
+      if (!rows.length) {
+        list.innerHTML = '<div class="empty">✅ No pending proposals — all caught up!</div>';
+        return;
+      }
+
+      list.innerHTML = rows.map(p => `
+        <div class="prop-card" id="prop-${p.proposal_id}">
+          <div class="prop-top">
+            <div class="prop-title">${p.title}</div>
+            <span class="badge badge-pending">Pending</span>
+          </div>
+          <div class="prop-meta">
+            👤 ${p.professor_name} &nbsp;·&nbsp; 🏛 ${p.department}
+            &nbsp;·&nbsp; 📅 ${new Date(p.submission_date).toLocaleDateString('en-IN', {day:'numeric',month:'short',year:'numeric'})}
+          </div>
+          <div class="prop-budget">Requested: ${fmt(p.budget_requested)}</div>
+          ${p.description ? '<div class="prop-desc">' + p.description + '</div>' : ''}
+          ${p.pdf_filename ? '<div style="margin-bottom:10px"><a href="/proposals/pdf/' + p.proposal_id + '" target="_blank" style="display:inline-flex;align-items:center;gap:6px;background:#EFF6FF;border:1px solid #93C5FD;color:#2563EB;padding:6px 14px;border-radius:8px;font-size:12px;font-weight:600;text-decoration:none;transition:all .2s" onmouseover="this.style.background=\'#DBEAFE\'" onmouseout="this.style.background=\'#EFF6FF\'">📄 View PDF: ' + p.pdf_filename + '</a></div>' : ''}
+          <div class="prop-actions">
+            <div class="action-row">
+              <input class="amt" id="amt-${p.proposal_id}" type="number"
+                     placeholder="Approve amount (₹)" value="${p.budget_requested}"/>
+              <button class="btn-approve" onclick="doApprove(${p.proposal_id})">✓ Approve</button>
+            </div>
+            <div class="action-row">
+              <input class="rmk" id="rmk-${p.proposal_id}" type="text"
+                     placeholder="Remarks (required for rejection)"/>
+              <button class="btn-reject" onclick="doReject(${p.proposal_id})">✗ Reject</button>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    } catch(e) { list.innerHTML = '<div class="empty">Error loading proposals.</div>'; }
+  }
+
+  // ── Approve ────────────────────────────────────────────────
+  async function doApprove(id) {
+    const amount  = document.getElementById('amt-' + id).value;
+    const remarks = document.getElementById('rmk-' + id).value || 'Approved by reviewer';
+    if (!amount || amount <= 0) { showToast('Enter a valid amount', 'error'); return; }
+
+    try {
+      const res = await fetch('/proposals/approve', {
+        method: 'POST', headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ proposal_id: id, reviewer_id: parseInt(reviewerId), amount: parseFloat(amount), remarks })
+      });
+      const data = await res.json();
+      if (data.success) {
+        showToast('✅ Proposal approved! ' + fmt(parseFloat(amount)) + ' allocated.');
+        document.getElementById('prop-' + id)?.remove();
+        refreshAll();
+      } else { showToast(data.error || 'Failed', 'error'); }
+    } catch(e) { showToast('Server error', 'error'); }
+  }
+
+  // ── Reject ─────────────────────────────────────────────────
+  async function doReject(id) {
+    const remarks = document.getElementById('rmk-' + id).value.trim();
+    if (!remarks) { showToast('Enter rejection remarks', 'error'); return; }
+
+    try {
+      const res = await fetch('/proposals/reject', {
+        method: 'POST', headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ proposal_id: id, reviewer_id: parseInt(reviewerId), remarks })
+      });
+      const data = await res.json();
+      if (data.success) {
+        showToast('Proposal rejected.');
+        document.getElementById('prop-' + id)?.remove();
+        refreshAll();
+      } else { showToast(data.error || 'Failed', 'error'); }
+    } catch(e) { showToast('Server error', 'error'); }
+  }
+
+  // ── History ────────────────────────────────────────────────
+  async function loadHistory() {
+    const list = document.getElementById('history-list');
+    try {
+      const res  = await fetch('/api/reviewer/' + reviewerId + '/history');
+      const rows = await res.json();
+      document.getElementById('s-approved').textContent = rows.filter(r => r.decision === 'Approved').length;
+      document.getElementById('s-rejected').textContent = rows.filter(r => r.decision === 'Rejected').length;
+
+      if (!rows.length) { list.innerHTML = '<div class="empty">No decisions yet.</div>'; return; }
+
+      list.innerHTML = rows.map(r => `
+        <div class="hist-entry">
+          <div class="hist-top">
+            <div class="hist-title">${r.title}</div>
+            <span class="badge badge-${r.decision.toLowerCase()}">${r.decision}</span>
+          </div>
+          <div class="hist-meta">
+            ${r.professor_name} · ${r.department} · ${fmt(r.budget_requested)}
+            ${r.remarks ? '<div style="margin-top:3px;color:#6B7280;font-style:italic">💬 ' + r.remarks + '</div>' : ''}
+          </div>
+        </div>
+      `).join('');
+    } catch(e) { list.innerHTML = '<div class="empty">Error loading history.</div>'; }
+  }
+
+  // ── Audit Log ──────────────────────────────────────────────
+  const dotColor = { INSERT: '#3B82F6', STATUS_CHANGE: '#F59E0B', DELETE: '#EF4444' };
+  async function loadAudit() {
+    const list = document.getElementById('audit-list');
+    try {
+      const res  = await fetch('/api/audit-log');
+      const rows = await res.json();
+      if (!rows.length) { list.innerHTML = '<div class="empty">No entries.</div>'; return; }
+      list.innerHTML = rows.slice(0, 8).map(e => `
+        <div class="audit-entry">
+          <div class="audit-dot" style="background:${dotColor[e.action] || '#D1D5DB'}"></div>
+          <div style="flex:1">
+            <div class="audit-action">${e.action} on ${e.table_name}</div>
+            <div class="audit-detail">${(e.new_value || e.old_value || '').substring(0, 60)}</div>
+          </div>
+          <div class="audit-time">${new Date(e.changed_at).toLocaleTimeString('en-IN', {hour:'2-digit', minute:'2-digit'})}</div>
+        </div>
+      `).join('');
+    } catch(e) {}
+  }
+
+  function refreshAll() {
+    loadPending();
+    loadHistory();
+    loadAudit();
+  }
+
+  function logout() { localStorage.clear(); window.location.href = '/'; }
+
+  // Init
+  refreshAll();
+  setInterval(loadAudit, 20000);
+</script>
+</body>
+</html>

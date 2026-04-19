@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>UniGrant — Professor Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Inter',sans-serif;background:#FAFAFA;color:#1F2937;min-height:100vh}
+
+    /* NAVBAR */
+    .navbar{background:#FFFFFF;border-bottom:1px solid #F3F4F6;padding:0 28px;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
+    .nav-brand{display:flex;align-items:center;gap:10px}
+    .nav-icon{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#EA580C,#F97316);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;color:#fff}
+    .nav-title{font-weight:700;font-size:15px;color:#111827}
+    .nav-subtitle{font-size:10px;color:#9CA3AF;margin-top:1px}
+    .nav-right{display:flex;align-items:center;gap:12px}
+    .user-badge{background:#FFF7ED;border:1px solid #FDBA74;padding:6px 14px;border-radius:20px;font-size:12px;color:#EA580C;font-weight:600;display:flex;align-items:center;gap:6px}
+    .user-dot{width:7px;height:7px;border-radius:50%;background:#F97316}
+    .btn-signout{background:none;border:1px solid #E5E7EB;color:#6B7280;padding:6px 14px;border-radius:8px;font-size:11px;cursor:pointer;font-family:'Inter',sans-serif;font-weight:500;transition:all .2s}
+    .btn-signout:hover{border-color:#F97316;color:#EA580C}
+
+    /* MAIN */
+    .main{padding:28px}
+    .page-header{margin-bottom:24px}
+    .page-title{font-size:22px;font-weight:800;color:#111827;letter-spacing:-0.3px}
+    .page-sub{font-size:13px;color:#6B7280;margin-top:4px}
+
+    /* LAYOUT */
+    .layout{display:grid;grid-template-columns:380px 1fr;gap:20px;align-items:start}
+
+    /* SUBMIT FORM */
+    .form-card{background:#FFFFFF;border:1px solid #F3F4F6;border-radius:16px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
+    .form-header{padding:16px 20px;border-bottom:1px solid #F3F4F6;background:linear-gradient(135deg,#FFF7ED,#FFFFFF)}
+    .form-header h3{font-size:14px;font-weight:700;color:#111827;display:flex;align-items:center;gap:8px}
+    .form-body{padding:20px}
+    .field{margin-bottom:16px}
+    .field label{display:block;font-size:11px;font-weight:600;color:#374151;margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em}
+    .field input,.field select,.field textarea{width:100%;padding:10px 14px;border:1.5px solid #E5E7EB;border-radius:10px;font-size:13px;font-family:'Inter',sans-serif;color:#111827;background:#FAFAFA;outline:none;transition:border .2s,box-shadow .2s}
+    .field input:focus,.field select:focus,.field textarea:focus{border-color:#F97316;box-shadow:0 0 0 3px rgba(249,115,22,0.08);background:#fff}
+    .field textarea{resize:vertical;min-height:80px}
+    .btn-submit{width:100%;padding:12px;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;background:linear-gradient(135deg,#EA580C,#F97316);color:#fff;box-shadow:0 4px 14px rgba(234,88,12,0.2);transition:all .25s}
+    .btn-submit:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(234,88,12,0.3)}
+    .btn-submit:active{transform:translateY(0)}
+
+    /* PROPOSALS LIST */
+    .proposals-card{background:#FFFFFF;border:1px solid #F3F4F6;border-radius:16px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
+    .proposals-header{padding:16px 20px;border-bottom:1px solid #F3F4F6;display:flex;align-items:center;justify-content:space-between;background:linear-gradient(135deg,#FFF7ED,#FFFFFF)}
+    .proposals-header h3{font-size:14px;font-weight:700;color:#111827}
+    .proposal-count{background:#FDBA74;color:#7C2D12;font-size:11px;font-weight:700;padding:3px 10px;border-radius:12px}
+    .proposals-body{padding:16px;max-height:75vh;overflow-y:auto}
+    .proposal-item{border:1px solid #F3F4F6;border-radius:12px;padding:16px;margin-bottom:12px;transition:all .2s;background:#fff}
+    .proposal-item:hover{border-color:#FDBA74;box-shadow:0 2px 8px rgba(249,115,22,0.06)}
+    .proposal-item:last-child{margin-bottom:0}
+    .prop-row{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:6px}
+    .prop-title{font-size:14px;font-weight:700;color:#111827}
+    .prop-meta{font-size:11px;color:#6B7280;line-height:1.6}
+    .prop-budget{font-size:15px;font-weight:800;color:#EA580C}
+
+    /* BADGES */
+    .badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:6px;font-size:10px;font-weight:700;letter-spacing:.03em}
+    .badge-pending{background:#FFF7ED;color:#EA580C;border:1px solid #FDBA74}
+    .badge-approved{background:#ECFDF5;color:#059669;border:1px solid #6EE7B7}
+    .badge-rejected{background:#FEF2F2;color:#DC2626;border:1px solid #FCA5A5}
+
+    .empty-state{text-align:center;padding:40px 20px;color:#9CA3AF;font-size:13px}
+    .empty-state .emoji{font-size:36px;margin-bottom:10px}
+
+    /* TOAST */
+    .toast{position:fixed;bottom:24px;right:24px;background:#111827;color:#F9FAFB;padding:12px 20px;border-radius:12px;font-size:13px;font-weight:500;z-index:999;opacity:0;transition:all .3s;transform:translateY(10px);pointer-events:none;box-shadow:0 8px 24px rgba(0,0,0,0.15)}
+    .toast.show{opacity:1;transform:translateY(0)}
+    .toast.success{border-left:4px solid #22C55E}
+    .toast.error{border-left:4px solid #EF4444}
+
+    ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:#FAFAFA}::-webkit-scrollbar-thumb{background:#D1D5DB;border-radius:4px}
+    @media(max-width:900px){.layout{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="nav-brand">
+    <div class="nav-icon">U</div>
+    <div><div class="nav-title">UniGrant</div><div class="nav-subtitle">Professor Dashboard</div></div>
+  </div>
+  <div class="nav-right">
+    <div class="user-badge"><div class="user-dot"></div><span id="nav-name">Loading...</span></div>
+    <button class="btn-signout" onclick="logout()">Sign out</button>
+  </div>
+</nav>
+
+<main class="main">
+  <div class="page-header">
+    <h1 class="page-title" id="welcome">Welcome back</h1>
+    <p class="page-sub">Submit new grant proposals and track their approval status in real-time</p>
+  </div>
+
+  <div class="layout">
+
+    <!-- LEFT: SUBMIT FORM -->
+    <div class="form-card">
+      <div class="form-header"><h3>📝 Submit New Proposal</h3></div>
+      <div class="form-body">
+        <div class="field">
+          <label>Proposal Title</label>
+          <input type="text" id="f-title" placeholder="e.g. AI-Based Crop Disease Detection"/>
+        </div>
+        <div class="field">
+          <label>Department</label>
+          <select id="f-dept"><option value="">Loading departments...</option></select>
+        </div>
+        <div class="field">
+          <label>Assign to Reviewer</label>
+          <select id="f-reviewer"><option value="">Loading reviewers...</option></select>
+        </div>
+        <div class="field">
+          <label>Budget Requested (₹)</label>
+          <input type="number" id="f-budget" placeholder="500000"/>
+        </div>
+        <div class="field">
+          <label>Description</label>
+          <textarea id="f-desc" placeholder="Describe the research objectives, methodology, and expected outcomes..."></textarea>
+        </div>
+        <div class="field">
+          <label>Proposal PDF (Optional)</label>
+          <input type="file" id="f-pdf" accept="application/pdf"/>
+        </div>
+        <button class="btn-submit" onclick="submitProposal()">🚀 Submit Proposal</button>
+      </div>
+    </div>
+
+    <!-- RIGHT: MY PROPOSALS -->
+    <div class="proposals-card">
+      <div class="proposals-header">
+        <h3>📋 My Proposals</h3>
+        <span class="proposal-count" id="prop-count">0</span>
+      </div>
+      <div class="proposals-body" id="proposals-list">
+        <div class="empty-state"><div class="emoji">📭</div>Loading your proposals...</div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  const profId = localStorage.getItem('ug_id');
+  const name   = localStorage.getItem('ug_name');
+
+  if (!profId || localStorage.getItem('ug_role') !== 'professor') {
+    window.location.href = '/';
+  }
+
+  document.getElementById('nav-name').textContent = name;
+  document.getElementById('welcome').textContent  = 'Welcome, ' + name;
+
+  function showToast(msg, type='success') {
+    const t = document.getElementById('toast');
+    t.textContent = msg; t.className = 'toast show ' + type;
+    setTimeout(() => t.className = 'toast', 3500);
+  }
+
+  const fmt = n => n ? '₹' + (n/100000).toFixed(1) + 'L' : '—';
+
+  // ── Load departments ───────────────────────────────────────
+  async function loadDepts() {
+    try {
+      const res = await fetch('/api/departments');
+      const depts = await res.json();
+      const sel = document.getElementById('f-dept');
+      sel.innerHTML = '<option value="">Select department</option>' +
+        depts.map(d => `<option value="${d.dept_id}">${d.dept_name}</option>`).join('');
+    } catch(e) {}
+  }
+
+  // ── Load reviewers ─────────────────────────────────────────
+  async function loadReviewers() {
+    try {
+      const res = await fetch('/proposals/reviewers');
+      const revs = await res.json();
+      const sel = document.getElementById('f-reviewer');
+      sel.innerHTML = '<option value="">Select reviewer</option>' +
+        revs.map(r => `<option value="${r.reviewer_id}">${r.full_name} (${r.designation})</option>`).join('');
+    } catch(e) {}
+  }
+
+  // ── Load my proposals ──────────────────────────────────────
+  async function loadProposals() {
+    try {
+      const res  = await fetch('/api/professor/' + profId + '/proposals');
+      const rows = await res.json();
+      const list = document.getElementById('proposals-list');
+      document.getElementById('prop-count').textContent = rows.length;
+
+      if (!rows.length) {
+        list.innerHTML = '<div class="empty-state"><div class="emoji">📭</div>No proposals submitted yet. Create your first one!</div>';
+        return;
+      }
+
+      list.innerHTML = rows.map(p => {
+        const s = p.status.toLowerCase();
+        let pdfLink = p.pdf_filename ? `<div style="margin-top:6px;font-size:12px"><a href="/proposals/pdf/${p.proposal_id}" target="_blank" style="color:#2563EB;text-decoration:none;font-weight:600">📄 ${p.pdf_filename}</a></div>` : '';
+        return `
+          <div class="proposal-item">
+            <div class="prop-row">
+              <div class="prop-title">${p.title}</div>
+              <span class="badge badge-${s}">${p.status}</span>
+            </div>
+            <div class="prop-meta">
+              📅 ${new Date(p.submission_date).toLocaleDateString('en-IN', {day:'numeric',month:'short',year:'numeric'})}
+              ${p.reviewer_name ? ' &nbsp;·&nbsp; 👤 Reviewed by ' + p.reviewer_name : ''}
+              ${p.remarks ? '<br>💬 <em>' + p.remarks + '</em>' : ''}
+            </div>
+            ${pdfLink}
+            <div style="margin-top:8px;display:flex;align-items:center;justify-content:space-between">
+              <div class="prop-budget">Requested: ${fmt(p.budget_requested)}</div>
+              ${p.amount_allocated ? '<div style="font-size:12px;color:#059669;font-weight:600">Allocated: ' + fmt(p.amount_allocated) + '</div>' : ''}
+            </div>
+          </div>`;
+      }).join('');
+    } catch(e) {
+      document.getElementById('proposals-list').innerHTML = '<div class="empty-state">Error loading proposals</div>';
+    }
+  }
+
+  // ── Submit proposal ────────────────────────────────────────
+  async function submitProposal() {
+    const title       = document.getElementById('f-title').value.trim();
+    const dept_id     = document.getElementById('f-dept').value;
+    const reviewer_id = document.getElementById('f-reviewer').value;
+    const budget      = document.getElementById('f-budget').value;
+    const description = document.getElementById('f-desc').value.trim();
+    const pdfFile     = document.getElementById('f-pdf').files[0];
+
+    if (!title || !dept_id || !reviewer_id || !budget) {
+      showToast('Please fill all required fields', 'error'); return;
+    }
+
+    const formData = new FormData();
+    formData.append('title', title);
+    formData.append('description', description);
+    formData.append('budget', budget);
+    formData.append('professor_id', profId);
+    formData.append('dept_id', dept_id);
+    formData.append('reviewer_id', reviewer_id);
+    if(pdfFile) formData.append('pdf_file', pdfFile);
+
+    try {
+      const res = await fetch('/proposals/submit', {
+        method: 'POST',
+        body: formData
+      });
+      const data = await res.json();
+      if (data.success) {
+        showToast('🎉 Proposal submitted successfully!');
+        document.getElementById('f-title').value = '';
+        document.getElementById('f-desc').value = '';
+        document.getElementById('f-budget').value = '';
+        document.getElementById('f-pdf').value = '';
+        loadProposals();
+      } else {
+        showToast(data.error || 'Submission failed', 'error');
+      }
+    } catch(e) {
+      showToast('Server error', 'error');
+    }
+  }
+
+  function logout() { localStorage.clear(); window.location.href = '/'; }
+
+  // Init
+  loadDepts();
+  loadReviewers();
+  loadProposals();
+</script>
+</body>
+</html>

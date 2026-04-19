@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>UniGrant — University Grant Management</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Inter',sans-serif;min-height:100vh;background:linear-gradient(135deg,#FFF7ED 0%,#FFFFFF 50%,#FFF7ED 100%);display:flex;align-items:center;justify-content:center;padding:20px}
+
+    .container{width:100%;max-width:960px;display:grid;grid-template-columns:1fr 1fr;background:#FFFFFF;border-radius:24px;overflow:hidden;box-shadow:0 25px 60px rgba(234,88,12,0.08),0 4px 12px rgba(0,0,0,0.04)}
+
+    /* LEFT SIDE — Branding */
+    .brand-side{background:linear-gradient(160deg,#EA580C 0%,#F97316 40%,#FB923C 100%);padding:60px 48px;display:flex;flex-direction:column;justify-content:center;position:relative;overflow:hidden}
+    .brand-side::before{content:'';position:absolute;top:-80px;right:-80px;width:300px;height:300px;border-radius:50%;background:rgba(255,255,255,0.08)}
+    .brand-side::after{content:'';position:absolute;bottom:-60px;left:-40px;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,0.05)}
+    .brand-logo{font-size:42px;font-weight:800;color:#fff;margin-bottom:12px;letter-spacing:-1px;position:relative;z-index:1}
+    .brand-logo span{display:inline-block;background:rgba(255,255,255,0.2);padding:2px 14px;border-radius:10px;margin-left:4px;font-size:34px}
+    .brand-tagline{font-size:16px;color:rgba(255,255,255,0.9);line-height:1.7;font-weight:400;position:relative;z-index:1;margin-bottom:28px}
+    .brand-features{list-style:none;position:relative;z-index:1}
+    .brand-features li{color:rgba(255,255,255,0.85);font-size:13px;padding:8px 0;display:flex;align-items:center;gap:10px;font-weight:500}
+    .brand-features li::before{content:'✓';display:flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,0.2);font-size:11px;flex-shrink:0}
+
+    /* RIGHT SIDE — Forms */
+    .form-side{padding:48px 44px;display:flex;flex-direction:column;justify-content:center}
+    .form-title{font-size:24px;font-weight:700;color:#111827;margin-bottom:4px}
+    .form-sub{font-size:13px;color:#6B7280;margin-bottom:32px;line-height:1.5}
+
+    /* Tabs */
+    .tabs{display:flex;gap:0;background:#F3F4F6;border-radius:10px;padding:4px;margin-bottom:28px}
+    .tab{flex:1;padding:10px 4px;text-align:center;font-size:13px;font-weight:600;color:#6B7280;border-radius:8px;cursor:pointer;transition:all .25s;border:none;background:none;font-family:'Inter',sans-serif}
+    .tab.active{background:#FFFFFF;color:#EA580C;box-shadow:0 2px 6px rgba(0,0,0,0.06)}
+    .tab:hover:not(.active){color:#374151}
+
+    /* Panels */
+    .panel{display:none}
+    .panel.active{display:block;animation:fadeUp .35s ease}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+    /* Google Login */
+    .google-field{margin-bottom:16px}
+    .google-field label{display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:6px;text-transform:uppercase;letter-spacing:.06em}
+    .google-field input{width:100%;padding:12px 14px;border:1.5px solid #D1D5DB;border-radius:10px;font-size:14px;font-family:'Inter',sans-serif;color:#111827;background:#F9FAFB;outline:none;transition:border .2s,box-shadow .2s}
+    .google-field input:focus{border-color:#F97316;box-shadow:0 0 0 3px rgba(249,115,22,0.12);background:#FFFFFF}
+    .google-field input::placeholder{color:#9CA3AF}
+
+    .btn-google{width:100%;display:flex;align-items:center;justify-content:center;gap:10px;padding:13px 20px;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;transition:all .25s;margin-top:8px}
+    .btn-google.primary{background:linear-gradient(135deg,#EA580C,#F97316);color:#fff;box-shadow:0 4px 14px rgba(234,88,12,0.25)}
+    .btn-google.primary:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(234,88,12,0.35)}
+    .btn-google.primary:active{transform:translateY(0)}
+
+    /* Reviewer Selection */
+    .reviewer-grid{display:flex;flex-direction:column;gap:10px;margin-bottom:16px}
+    .reviewer-option{display:flex;align-items:center;gap:14px;padding:14px 16px;border:1.5px solid #E5E7EB;border-radius:12px;cursor:pointer;transition:all .2s;background:#FFFFFF}
+    .reviewer-option:hover{border-color:#FDBA74;background:#FFF7ED}
+    .reviewer-option.selected{border-color:#F97316;background:#FFF7ED;box-shadow:0 0 0 3px rgba(249,115,22,0.1)}
+    .reviewer-avatar{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;color:#fff;flex-shrink:0}
+    .reviewer-avatar.a1{background:linear-gradient(135deg,#3B82F6,#6366F1)}
+    .reviewer-avatar.a2{background:linear-gradient(135deg,#10B981,#059669)}
+    .reviewer-avatar.a3{background:linear-gradient(135deg,#F59E0B,#D97706)}
+    .reviewer-info{flex:1}
+    .reviewer-name{font-size:14px;font-weight:600;color:#111827}
+    .reviewer-role{font-size:11px;color:#6B7280;margin-top:2px}
+    .reviewer-check{width:20px;height:20px;border-radius:50%;border:2px solid #D1D5DB;display:flex;align-items:center;justify-content:center;font-size:10px;color:transparent;transition:all .2s;flex-shrink:0}
+    .reviewer-option.selected .reviewer-check{border-color:#F97316;background:#F97316;color:#fff}
+
+    .btn-reviewer{width:100%;padding:13px;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;background:#F3F4F6;color:#9CA3AF;transition:all .25s;pointer-events:none}
+    .btn-reviewer.enabled{background:linear-gradient(135deg,#EA580C,#F97316);color:#fff;pointer-events:auto;box-shadow:0 4px 14px rgba(234,88,12,0.25)}
+    .btn-reviewer.enabled:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(234,88,12,0.35)}
+
+    /* Status */
+    .status-msg{text-align:center;padding:10px;border-radius:8px;font-size:12px;font-weight:500;margin-top:12px;display:none}
+    .status-msg.error{display:block;background:#FEE2E2;color:#DC2626}
+    .status-msg.loading{display:block;background:#FFF7ED;color:#EA580C}
+
+    /* Footer */
+    .login-footer{text-align:center;margin-top:24px;font-size:11px;color:#9CA3AF}
+
+    @media(max-width:768px){
+      .container{grid-template-columns:1fr;max-width:480px}
+      .brand-side{padding:36px 32px}
+      .form-side{padding:32px 28px}
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <!-- LEFT BRANDING -->
+  <div class="brand-side">
+    <div class="brand-logo">Uni<span>Grant</span></div>
+    <p class="brand-tagline">Streamlined university grant proposal management with smart reviewer assignment and real-time fund tracking.</p>
+    <ul class="brand-features">
+      <li>Google-powered professor authentication</li>
+      <li>Smart proposal → reviewer routing</li>
+      <li>Automated fund allocation & audit trail</li>
+      <li>Real-time approval dashboard</li>
+    </ul>
+  </div>
+
+  <!-- RIGHT FORMS -->
+  <div class="form-side">
+    <div class="form-title">Welcome back</div>
+    <p class="form-sub">Choose your role to access your personalized dashboard</p>
+
+    <!-- TABS -->
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('professor')">👨‍🏫 Professor</button>
+      <button class="tab" onclick="switchTab('reviewer')">📋 Reviewer</button>
+    </div>
+
+    <!-- PROFESSOR PANEL -->
+    <div class="panel active" id="panel-professor">
+      <div class="google-field">
+        <label>Full Name</label>
+        <input type="text" id="prof-name" placeholder="Dr. John Smith"/>
+      </div>
+      <div class="google-field">
+        <label>Google Email</label>
+        <input type="email" id="prof-email" placeholder="john.smith@university.edu"/>
+      </div>
+      <button class="btn-google primary" onclick="professorLogin()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18A10.96 10.96 0 0 0 1 12c0 1.77.42 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+        Sign in with Google
+      </button>
+      <div class="status-msg" id="prof-status"></div>
+    </div>
+
+    <!-- REVIEWER PANEL -->
+    <div class="panel" id="panel-reviewer">
+      <div class="reviewer-grid" id="reviewer-list">
+        <div style="text-align:center;color:#9CA3AF;font-size:12px;padding:20px">Loading reviewers...</div>
+      </div>
+      <button class="btn-reviewer" id="btn-reviewer-login" onclick="reviewerLogin()">Sign in as Reviewer</button>
+      <div class="status-msg" id="rev-status"></div>
+    </div>
+
+    <div class="login-footer">UniGrant DBMS Project © 2026</div>
+  </div>
+</div>
+
+<script>
+  let selectedReviewerId = null;
+  const avatarClasses = ['a1','a2','a3'];
+
+  // ── Tab switching ──────────────────────────────────────────
+  function switchTab(tab) {
+    document.querySelectorAll('.tab').forEach((t,i) => {
+      t.classList.toggle('active', (tab==='professor' && i===0) || (tab==='reviewer' && i===1));
+    });
+    document.getElementById('panel-professor').classList.toggle('active', tab==='professor');
+    document.getElementById('panel-reviewer').classList.toggle('active', tab==='reviewer');
+  }
+
+  // ── Load reviewers ─────────────────────────────────────────
+  async function loadReviewers() {
+    try {
+      const res = await fetch('/proposals/reviewers');
+      const reviewers = await res.json();
+      const grid = document.getElementById('reviewer-list');
+
+      if (!reviewers.length) {
+        grid.innerHTML = '<div style="text-align:center;color:#9CA3AF;font-size:12px;padding:20px">No reviewers found in database.</div>';
+        return;
+      }
+
+      grid.innerHTML = reviewers.map((r, i) => `
+        <div class="reviewer-option" onclick="selectReviewer(${r.reviewer_id}, this)">
+          <div class="reviewer-avatar ${avatarClasses[i % 3]}">${r.full_name.charAt(0)}</div>
+          <div class="reviewer-info">
+            <div class="reviewer-name">${r.full_name}</div>
+            <div class="reviewer-role">${r.designation || 'Reviewer'}</div>
+          </div>
+          <div class="reviewer-check">✓</div>
+        </div>
+      `).join('');
+    } catch(e) {
+      document.getElementById('reviewer-list').innerHTML = '<div style="color:#DC2626;font-size:12px;padding:20px;text-align:center">Could not load reviewers. Is the database running?</div>';
+    }
+  }
+
+  function selectReviewer(id, el) {
+    selectedReviewerId = id;
+    document.querySelectorAll('.reviewer-option').forEach(o => o.classList.remove('selected'));
+    el.classList.add('selected');
+    document.getElementById('btn-reviewer-login').classList.add('enabled');
+  }
+
+  // ── Professor Google Login ─────────────────────────────────
+  async function professorLogin() {
+    const name  = document.getElementById('prof-name').value.trim();
+    const email = document.getElementById('prof-email').value.trim();
+    const status = document.getElementById('prof-status');
+
+    if (!name || !email) {
+      status.className = 'status-msg error'; status.textContent = 'Please enter both name and email.';
+      return;
+    }
+
+    status.className = 'status-msg loading'; status.textContent = 'Authenticating...';
+
+    try {
+      const res = await fetch('/login', {
+        method: 'POST', headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ role: 'professor_google', name, email })
+      });
+      const data = await res.json();
+      if (data.success) {
+        localStorage.setItem('ug_role', 'professor');
+        localStorage.setItem('ug_name', data.name);
+        localStorage.setItem('ug_id', data.id);
+        window.location.href = '/professor';
+      } else {
+        status.className = 'status-msg error'; status.textContent = data.error || 'Login failed';
+      }
+    } catch(e) {
+      status.className = 'status-msg error'; status.textContent = 'Server error. Is Flask running?';
+    }
+  }
+
+  // ── Reviewer Login ─────────────────────────────────────────
+  async function reviewerLogin() {
+    if (!selectedReviewerId) return;
+    const status = document.getElementById('rev-status');
+    status.className = 'status-msg loading'; status.textContent = 'Signing in...';
+
+    try {
+      const res = await fetch('/login', {
+        method: 'POST', headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ role: 'reviewer', user_id: selectedReviewerId })
+      });
+      const data = await res.json();
+      if (data.success) {
+        localStorage.setItem('ug_role', 'reviewer');
+        localStorage.setItem('ug_name', data.name);
+        localStorage.setItem('ug_id', data.id);
+        window.location.href = '/reviewer';
+      } else {
+        status.className = 'status-msg error'; status.textContent = data.error || 'Login failed';
+      }
+    } catch(e) {
+      status.className = 'status-msg error'; status.textContent = 'Server error';
+    }
+  }
+
+  // Init
+  loadReviewers();
+</script>
+</body>
+</html>
