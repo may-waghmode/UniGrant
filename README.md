@@ -58,7 +58,7 @@ class Config:
     DB_PORT     = 3306
 ```
 
-### 4. Run the Application
+### 4. TO Run the Application
 
 Start the Flask development server:
 
