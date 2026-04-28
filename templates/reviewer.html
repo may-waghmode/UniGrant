@@ -86,6 +86,7 @@
     .badge-approved{background:#ECFDF5;color:#059669;border:1px solid #6EE7B7}
     .badge-rejected{background:#FEF2F2;color:#DC2626;border:1px solid #FCA5A5}
     .badge-pending{background:#FFF7ED;color:#EA580C;border:1px solid #FDBA74}
+    .badge-review{background:#EFF6FF;color:#2563EB;border:1px solid #93C5FD}
 
     .empty{padding:32px;text-align:center;color:#9CA3AF;font-size:12px}
 
@@ -107,6 +108,7 @@
     <div><div class="nav-title">UniGrant</div><div class="nav-subtitle">Reviewer Dashboard</div></div>
   </div>
   <div class="nav-right">
+    <a href="/analytics-dashboard" style="background:#F3E8FF;border:1px solid #C4B5FD;color:#7C3AED;padding:6px 14px;border-radius:8px;font-size:11px;font-weight:600;text-decoration:none;transition:all .2s">📊 Analytics</a>
     <div class="user-badge"><div class="user-dot"></div><span id="nav-name">Loading...</span></div>
     <button class="btn-signout" onclick="logout()">Sign out</button>
   </div>
@@ -188,7 +190,7 @@
         <div class="prop-card" id="prop-${p.proposal_id}">
           <div class="prop-top">
             <div class="prop-title">${p.title}</div>
-            <span class="badge badge-pending">Pending</span>
+            <span class="badge ${p.status==='Under Review'?'badge-review':'badge-pending'}">${p.status}</span>
           </div>
           <div class="prop-meta">
             👤 ${p.professor_name} &nbsp;·&nbsp; 🏛 ${p.department}

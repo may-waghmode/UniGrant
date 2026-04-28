@@ -23,6 +23,10 @@ def professor_dashboard():
 def reviewer_dashboard():
     return render_template('reviewer.html')
 
+@dashboard_bp.route('/analytics-dashboard')
+def analytics_dashboard():
+    return render_template('analytics.html')
+
 
 # ── Login ────────────────────────────────────────────────────
 
@@ -121,7 +125,7 @@ def reviewer_pending():
         FROM   Proposals p
         JOIN   Professors  pr ON p.professor_id = pr.professor_id
         JOIN   Departments d  ON p.dept_id = d.dept_id
-        WHERE  p.status = 'Pending'
+        WHERE  p.status IN ('Pending', 'Under Review')
     """
     params = []
     if reviewer_id:

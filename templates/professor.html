@@ -74,6 +74,48 @@
     .toast.error{border-left:4px solid #EF4444}
 
     ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:#FAFAFA}::-webkit-scrollbar-thumb{background:#D1D5DB;border-radius:4px}
+    /* PROGRESS SECTION */
+    .progress-section{margin-top:24px}
+    .progress-card{background:#fff;border:1px solid #F3F4F6;border-radius:16px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.04);margin-bottom:16px}
+    .progress-head{padding:16px 20px;border-bottom:1px solid #F3F4F6;display:flex;align-items:center;justify-content:space-between;background:linear-gradient(135deg,#ECFDF5,#fff)}
+    .progress-head h3{font-size:14px;font-weight:700;color:#111827}
+    .progress-body{padding:16px 20px}
+    .grant-item{border:1px solid #F3F4F6;border-radius:12px;padding:16px;margin-bottom:14px;transition:all .2s;background:#fff}
+    .grant-item:hover{border-color:#6EE7B7;box-shadow:0 2px 8px rgba(5,150,105,.06)}
+    .grant-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:10px}
+    .grant-title{font-size:14px;font-weight:700;color:#111827}
+    .spending-bar-wrap{background:#F3F4F6;border-radius:8px;height:10px;overflow:hidden;margin:8px 0}
+    .spending-bar{height:100%;border-radius:8px;transition:width .5s ease;background:linear-gradient(90deg,#059669,#10B981)}
+    .spending-bar.high{background:linear-gradient(90deg,#F59E0B,#EF4444)}
+    .spending-info{display:flex;justify-content:space-between;font-size:11px;color:#6B7280;margin-bottom:10px}
+    .spending-info b{color:#111827}
+    .cat-badge{display:inline-flex;padding:3px 8px;border-radius:5px;font-size:10px;font-weight:600;margin:2px 4px 2px 0}
+    .cat-equipment{background:#DBEAFE;color:#1D4ED8}.cat-travel{background:#FCE7F3;color:#BE185D}
+    .cat-personnel{background:#FEF3C7;color:#92400E}.cat-materials{background:#E0E7FF;color:#4338CA}
+    .cat-software{background:#CCFBF1;color:#0F766E}.cat-other{background:#F3F4F6;color:#4B5563}
+    .btn-update{background:#ECFDF5;color:#059669;border:1.5px solid #6EE7B7;padding:8px 16px;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;transition:all .2s}
+    .btn-update:hover{background:#D1FAE5;border-color:#34D399}
+    .btn-view-history{background:#EFF6FF;color:#2563EB;border:1.5px solid #93C5FD;padding:8px 16px;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;transition:all .2s;margin-left:6px}
+    .btn-view-history:hover{background:#DBEAFE}
+
+    /* MODAL */
+    .modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);z-index:100;display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+    .modal-overlay.show{display:flex}
+    .modal{background:#fff;border-radius:16px;width:560px;max-width:94vw;max-height:85vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.2);animation:modalIn .25s ease}
+    @keyframes modalIn{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
+    .modal-head{padding:16px 20px;border-bottom:1px solid #F3F4F6;display:flex;align-items:center;justify-content:space-between}
+    .modal-head h3{font-size:15px;font-weight:700;color:#111827}
+    .modal-close{background:none;border:none;font-size:20px;cursor:pointer;color:#9CA3AF;padding:4px 8px;border-radius:6px}
+    .modal-close:hover{background:#F3F4F6;color:#111827}
+    .modal-body{padding:20px}
+    .timeline{border-left:2px solid #E5E7EB;margin-left:10px;padding-left:20px}
+    .timeline-entry{position:relative;margin-bottom:18px;padding-bottom:18px;border-bottom:1px solid #F9FAFB}
+    .timeline-entry:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
+    .timeline-entry::before{content:'';position:absolute;left:-27px;top:4px;width:12px;height:12px;border-radius:50%;background:#059669;border:2px solid #fff;box-shadow:0 0 0 2px #6EE7B7}
+    .tl-title{font-size:13px;font-weight:700;color:#111827;margin-bottom:4px}
+    .tl-meta{font-size:11px;color:#6B7280;line-height:1.6}
+    .tl-amount{font-size:13px;font-weight:800;color:#EA580C;margin-top:4px}
+
     @media(max-width:900px){.layout{grid-template-columns:1fr}}
   </style>
 </head>
@@ -142,7 +184,75 @@
     </div>
 
   </div>
+
+  <!-- PROGRESS TRACKING SECTION -->
+  <div class="progress-section">
+    <div class="progress-card">
+      <div class="progress-head">
+        <h3>💰 Spending & Progress Tracker</h3>
+        <span class="proposal-count" id="approved-count">0</span>
+      </div>
+      <div class="progress-body" id="approved-grants-list">
+        <div class="empty-state"><div class="emoji">📊</div>No approved grants yet. Once your proposals are approved, track spending here.</div>
+      </div>
+    </div>
+  </div>
+
 </main>
+
+<!-- PROGRESS UPDATE MODAL -->
+<div class="modal-overlay" id="update-modal">
+  <div class="modal">
+    <div class="modal-head">
+      <h3 id="modal-title">📝 Submit Progress Update</h3>
+      <button class="modal-close" onclick="closeModal('update-modal')">&times;</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="pu-proposal-id"/>
+      <div class="field">
+        <label>Update Title</label>
+        <input type="text" id="pu-title" placeholder="e.g. Purchased Lab Equipment"/>
+      </div>
+      <div class="field">
+        <label>Amount Spent (₹)</label>
+        <input type="number" id="pu-amount" placeholder="50000"/>
+      </div>
+      <div class="field">
+        <label>Spending Category</label>
+        <select id="pu-category">
+          <option value="Equipment">🔧 Equipment</option>
+          <option value="Travel">✈️ Travel</option>
+          <option value="Personnel">👥 Personnel</option>
+          <option value="Materials">📦 Materials</option>
+          <option value="Software">💻 Software</option>
+          <option value="Other">📋 Other</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Description</label>
+        <textarea id="pu-desc" placeholder="Describe what was done, items purchased, etc."></textarea>
+      </div>
+      <div class="field">
+        <label>Proof Document (Invoice/Receipt)</label>
+        <input type="file" id="pu-doc" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"/>
+      </div>
+      <button class="btn-submit" onclick="submitProgress()">📤 Submit Progress Update</button>
+    </div>
+  </div>
+</div>
+
+<!-- HISTORY MODAL -->
+<div class="modal-overlay" id="history-modal">
+  <div class="modal">
+    <div class="modal-head">
+      <h3 id="history-modal-title">📜 Spending History</h3>
+      <button class="modal-close" onclick="closeModal('history-modal')">&times;</button>
+    </div>
+    <div class="modal-body" id="history-modal-body">
+      <div class="empty-state">Loading...</div>
+    </div>
+  </div>
+</div>
 
 <div class="toast" id="toast"></div>
 
@@ -271,10 +381,175 @@
 
   function logout() { localStorage.clear(); window.location.href = '/'; }
 
+  // ── Load approved grants for progress tracking ────────────
+  async function loadApprovedGrants() {
+    try {
+      const res  = await fetch('/api/professor/' + profId + '/proposals');
+      const rows = await res.json();
+      const approved = rows.filter(p => p.status === 'Approved' || p.status === 'Closed');
+      const list = document.getElementById('approved-grants-list');
+      document.getElementById('approved-count').textContent = approved.length;
+
+      if (!approved.length) {
+        list.innerHTML = '<div class="empty-state"><div class="emoji">📊</div>No approved grants yet. Once your proposals are approved, track spending here.</div>';
+        return;
+      }
+
+      list.innerHTML = approved.map(p => {
+        const allocated = p.amount_allocated || p.budget_requested;
+        const spent = p.amount_spent || 0;
+        const remaining = p.amount_remaining != null ? p.amount_remaining : (allocated - spent);
+        const pct = allocated > 0 ? Math.min((spent / allocated) * 100, 100).toFixed(1) : 0;
+        const barClass = pct > 80 ? 'spending-bar high' : 'spending-bar';
+        return `
+          <div class="grant-item">
+            <div class="grant-top">
+              <div class="grant-title">${p.title}</div>
+              <span class="badge badge-${p.status.toLowerCase()}">${p.status}</span>
+            </div>
+            <div class="spending-info">
+              <span>Spent: <b>${fmt(spent)}</b></span>
+              <span>Remaining: <b>${fmt(remaining)}</b></span>
+              <span>Allocated: <b>${fmt(allocated)}</b></span>
+            </div>
+            <div class="spending-bar-wrap"><div class="${barClass}" style="width:${pct}%"></div></div>
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px">
+              <span style="font-size:12px;font-weight:700;color:${pct>80?'#DC2626':'#059669'}">${pct}% utilized</span>
+              <div>
+                ${p.status==='Approved'?`<button class="btn-update" onclick="openUpdateModal(${p.proposal_id},'${p.title.replace(/'/g,"\\'")}')">📝 Add Update</button>`:''}
+                <button class="btn-view-history" onclick="viewHistory(${p.proposal_id},'${p.title.replace(/'/g,"\\'")}')">📜 History</button>
+              </div>
+            </div>
+          </div>`;
+      }).join('');
+    } catch(e) {
+      document.getElementById('approved-grants-list').innerHTML = '<div class="empty-state">Error loading grants</div>';
+    }
+  }
+
+  // ── Modal helpers ─────────────────────────────────────────
+  function openUpdateModal(proposalId, title) {
+    document.getElementById('pu-proposal-id').value = proposalId;
+    document.getElementById('modal-title').textContent = '📝 Update: ' + title;
+    document.getElementById('pu-title').value = '';
+    document.getElementById('pu-amount').value = '';
+    document.getElementById('pu-desc').value = '';
+    document.getElementById('pu-doc').value = '';
+    document.getElementById('update-modal').classList.add('show');
+  }
+
+  function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+
+  // ── Submit progress update ────────────────────────────────
+  async function submitProgress() {
+    const proposalId = document.getElementById('pu-proposal-id').value;
+    const title      = document.getElementById('pu-title').value.trim();
+    const amount     = document.getElementById('pu-amount').value;
+    const category   = document.getElementById('pu-category').value;
+    const desc       = document.getElementById('pu-desc').value.trim();
+    const docFile    = document.getElementById('pu-doc').files[0];
+
+    if (!title || !amount || amount <= 0) {
+      showToast('Fill in title and valid amount', 'error'); return;
+    }
+
+    const formData = new FormData();
+    formData.append('proposal_id', proposalId);
+    formData.append('professor_id', profId);
+    formData.append('update_title', title);
+    formData.append('description', desc);
+    formData.append('amount_spent', amount);
+    formData.append('category', category);
+    if (docFile) formData.append('doc_file', docFile);
+
+    try {
+      const res = await fetch('/progress/submit', { method: 'POST', body: formData });
+      const data = await res.json();
+      if (data.success) {
+        showToast('✅ Progress update recorded!');
+        closeModal('update-modal');
+        loadProposals();
+        loadApprovedGrants();
+      } else {
+        showToast(data.error || 'Failed to record', 'error');
+      }
+    } catch(e) { showToast('Server error', 'error'); }
+  }
+
+  // ── View spending history ─────────────────────────────────
+  async function viewHistory(proposalId, title) {
+    document.getElementById('history-modal-title').textContent = '📜 ' + title;
+    document.getElementById('history-modal-body').innerHTML = '<div class="empty-state">Loading...</div>';
+    document.getElementById('history-modal').classList.add('show');
+
+    try {
+      const [updatesRes, summaryRes] = await Promise.all([
+        fetch('/progress/list/' + proposalId),
+        fetch('/progress/spending-summary/' + proposalId)
+      ]);
+      const updates = await updatesRes.json();
+      const summary = await summaryRes.json();
+
+      let html = '';
+
+      // Summary section
+      if (summary.overall) {
+        const o = summary.overall;
+        const pct = o.utilization_pct;
+        html += `
+          <div style="background:#F9FAFB;padding:14px;border-radius:10px;margin-bottom:16px">
+            <div style="font-size:11px;font-weight:700;color:#6B7280;text-transform:uppercase;margin-bottom:8px">Spending Overview</div>
+            <div class="spending-info"><span>Allocated: <b>${fmt(o.amount_allocated)}</b></span><span>Spent: <b>${fmt(o.amount_spent)}</b></span><span>Remaining: <b>${fmt(o.amount_remaining)}</b></span></div>
+            <div class="spending-bar-wrap"><div class="spending-bar${pct>80?' high':''}" style="width:${pct}%"></div></div>
+            <div style="text-align:center;font-size:12px;font-weight:700;color:${pct>80?'#DC2626':'#059669'}">${pct}% utilized · ${o.total_updates} updates</div>
+          </div>`;
+      }
+
+      // Category breakdown
+      if (summary.categories && summary.categories.length) {
+        html += '<div style="margin-bottom:16px">';
+        html += '<div style="font-size:11px;font-weight:700;color:#6B7280;text-transform:uppercase;margin-bottom:8px">Category Breakdown</div>';
+        summary.categories.forEach(c => {
+          const catClass = 'cat-' + c.spending_category.toLowerCase();
+          html += `<span class="cat-badge ${catClass}">${c.spending_category}: ${fmt(c.total)} (${c.entries} entries)</span>`;
+        });
+        html += '</div>';
+      }
+
+      // Timeline
+      if (updates.length) {
+        html += '<div style="font-size:11px;font-weight:700;color:#6B7280;text-transform:uppercase;margin-bottom:10px">Update Timeline</div>';
+        html += '<div class="timeline">';
+        updates.forEach(u => {
+          const catClass = 'cat-' + u.spending_category.toLowerCase();
+          html += `
+            <div class="timeline-entry">
+              <div class="tl-title">${u.update_title}</div>
+              <div class="tl-meta">
+                📅 ${new Date(u.update_date).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})}
+                &nbsp;·&nbsp; <span class="cat-badge ${catClass}">${u.spending_category}</span>
+                ${u.doc_filename ? `<br><a href="/progress/doc/${u.update_id}" target="_blank" style="color:#2563EB;font-weight:600;text-decoration:none">📎 ${u.doc_filename}</a>` : ''}
+                ${u.description ? `<br>${u.description}` : ''}
+              </div>
+              <div class="tl-amount">₹${(u.amount_spent).toLocaleString('en-IN')}</div>
+            </div>`;
+        });
+        html += '</div>';
+      } else {
+        html += '<div class="empty-state">No progress updates yet.</div>';
+      }
+
+      document.getElementById('history-modal-body').innerHTML = html;
+    } catch(e) {
+      document.getElementById('history-modal-body').innerHTML = '<div class="empty-state">Error loading history</div>';
+    }
+  }
+
   // Init
   loadDepts();
   loadReviewers();
   loadProposals();
+  loadApprovedGrants();
 </script>
 </body>
 </html>

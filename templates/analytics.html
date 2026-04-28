@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>UniGrant — Advanced Analytics</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Inter',sans-serif;background:#FAFAFA;color:#1F2937;min-height:100vh}
+    .navbar{background:#fff;border-bottom:1px solid #F3F4F6;padding:0 28px;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+    .nav-brand{display:flex;align-items:center;gap:10px}
+    .nav-icon{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#7C3AED,#EC4899);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;color:#fff}
+    .nav-title{font-weight:700;font-size:15px;color:#111827}
+    .nav-subtitle{font-size:10px;color:#9CA3AF;margin-top:1px}
+    .nav-right{display:flex;align-items:center;gap:12px}
+    .btn-back{background:#EFF6FF;border:1px solid #93C5FD;color:#2563EB;padding:7px 16px;border-radius:8px;font-size:11px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;text-decoration:none;transition:all .2s}
+    .btn-back:hover{background:#DBEAFE}
+    .main{padding:28px;max-width:1200px;margin:0 auto}
+    .page-header{margin-bottom:24px}
+    .page-title{font-size:22px;font-weight:800;color:#111827;letter-spacing:-.3px}
+    .page-sub{font-size:13px;color:#6B7280;margin-top:4px}
+
+    /* TABS */
+    .tabs{display:flex;gap:6px;margin-bottom:20px;flex-wrap:wrap}
+    .tab{padding:8px 18px;border-radius:10px;font-size:12px;font-weight:600;cursor:pointer;border:1.5px solid #E5E7EB;background:#fff;color:#6B7280;transition:all .2s;font-family:'Inter',sans-serif}
+    .tab:hover{border-color:#C4B5FD;color:#7C3AED}
+    .tab.active{background:linear-gradient(135deg,#7C3AED,#EC4899);color:#fff;border-color:transparent}
+
+    /* CARDS */
+    .card{background:#fff;border:1px solid #F3F4F6;border-radius:16px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.04);margin-bottom:16px}
+    .card-head{padding:14px 20px;border-bottom:1px solid #F3F4F6;display:flex;align-items:center;justify-content:space-between;background:linear-gradient(135deg,#FAFAFA,#fff)}
+    .card-title{font-size:14px;font-weight:700;color:#111827}
+    .card-badge{background:#F3E8FF;color:#7C3AED;padding:3px 10px;border-radius:6px;font-size:10px;font-weight:700}
+    .card-body{padding:16px 20px}
+
+    /* TABLE */
+    .tbl-wrap{overflow-x:auto}
+    table{width:100%;border-collapse:collapse;font-size:12px}
+    th{background:#F9FAFB;padding:10px 12px;text-align:left;font-weight:700;color:#6B7280;text-transform:uppercase;font-size:10px;letter-spacing:.06em;border-bottom:2px solid #F3F4F6;white-space:nowrap}
+    td{padding:10px 12px;border-bottom:1px solid #F9FAFB;color:#374151;white-space:nowrap}
+    tr:hover td{background:#FEFCE8}
+
+    /* BADGES */
+    .badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:6px;font-size:10px;font-weight:700}
+    .badge-rank{background:#DBEAFE;color:#1D4ED8;border:1px solid #93C5FD}
+    .badge-q1{background:#ECFDF5;color:#059669}.badge-q2{background:#EFF6FF;color:#2563EB}.badge-q3{background:#FFF7ED;color:#EA580C}.badge-q4{background:#FEF2F2;color:#DC2626}
+    .badge-on{background:#ECFDF5;color:#059669;border:1px solid #6EE7B7}.badge-off{background:#FEF2F2;color:#DC2626;border:1px solid #FCA5A5}
+    .badge-priv{background:#F3E8FF;color:#7C3AED;border:1px solid #C4B5FD;display:block;margin:2px 0;font-size:10px;padding:4px 8px;border-radius:4px;word-break:break-all;white-space:normal}
+
+    /* SECTION */
+    .section{display:none}.section.active{display:block}
+
+    /* STATUS GRID */
+    .status-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;margin-bottom:16px}
+    .status-card{background:#fff;border:1px solid #F3F4F6;border-radius:12px;padding:16px;transition:all .2s}
+    .status-card:hover{border-color:#C4B5FD;box-shadow:0 3px 12px rgba(124,58,237,.06)}
+    .sc-label{font-size:10px;font-weight:700;color:#6B7280;letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px}
+    .sc-value{font-size:22px;font-weight:800;letter-spacing:-.5px}
+    .sc-sub{font-size:11px;color:#9CA3AF;margin-top:3px}
+    .purple{color:#7C3AED}.green{color:#059669}.orange{color:#EA580C}.blue{color:#2563EB}
+
+    .empty{padding:32px;text-align:center;color:#9CA3AF;font-size:12px}
+
+    .sql-box{background:#1E1B2E;color:#C4B5FD;padding:14px 18px;border-radius:10px;font-family:'Courier New',monospace;font-size:11px;line-height:1.7;overflow-x:auto;margin:10px 0;white-space:pre}
+    .sql-kw{color:#EC4899}.sql-fn{color:#34D399}.sql-str{color:#FCD34D}
+
+    @media(max-width:768px){.status-grid{grid-template-columns:1fr}}
+    ::-webkit-scrollbar{width:4px;height:4px}::-webkit-scrollbar-track{background:#FAFAFA}::-webkit-scrollbar-thumb{background:#D1D5DB;border-radius:4px}
+  </style>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="nav-brand">
+    <div class="nav-icon">A</div>
+    <div><div class="nav-title">UniGrant Analytics</div><div class="nav-subtitle">Advanced DBMS Features</div></div>
+  </div>
+  <div class="nav-right">
+    <a class="btn-back" href="/reviewer">← Back to Dashboard</a>
+  </div>
+</nav>
+
+<main class="main">
+  <div class="page-header">
+    <h1 class="page-title">📊 Advanced Database Analytics</h1>
+    <p class="page-sub">Window Functions · Event Scheduler · Indexes · GRANT/REVOKE Security</p>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" onclick="showTab('rankings')">🏆 Budget Rankings</button>
+    <button class="tab" onclick="showTab('running')">📈 Running Totals</button>
+    <button class="tab" onclick="showTab('professor')">👤 Professor Analytics</button>
+    <button class="tab" onclick="showTab('dept')">🏛 Dept Stats</button>
+    <button class="tab" onclick="showTab('events')">⏰ Event Scheduler</button>
+    <button class="tab" onclick="showTab('indexes')">⚡ Indexes</button>
+    <button class="tab" onclick="showTab('security')">🔒 GRANT/REVOKE</button>
+  </div>
+
+  <!-- BUDGET RANKINGS -->
+  <div class="section active" id="sec-rankings">
+    <div class="card">
+      <div class="card-head"><span class="card-title">🏆 Budget Rankings (Window Functions)</span><span class="card-badge">RANK · DENSE_RANK · PERCENT_RANK</span></div>
+      <div class="card-body">
+        <div class="sql-box"><span class="sql-kw">SELECT</span> title, dept_name, budget_requested,
+  <span class="sql-fn">RANK()</span> <span class="sql-kw">OVER</span> (<span class="sql-kw">PARTITION BY</span> dept_id <span class="sql-kw">ORDER BY</span> budget_requested <span class="sql-kw">DESC</span>) <span class="sql-kw">AS</span> dept_rank,
+  <span class="sql-fn">DENSE_RANK()</span> <span class="sql-kw">OVER</span> (...) <span class="sql-kw">AS</span> dept_dense_rank,
+  <span class="sql-fn">PERCENT_RANK()</span> <span class="sql-kw">OVER</span> (...) <span class="sql-kw">AS</span> percentile
+<span class="sql-kw">FROM</span> Proposals <span class="sql-kw">JOIN</span> Departments;</div>
+        <div class="tbl-wrap"><table id="tbl-rankings"><tr><td class="empty">Loading...</td></tr></table></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RUNNING TOTALS -->
+  <div class="section" id="sec-running">
+    <div class="card">
+      <div class="card-head"><span class="card-title">📈 Running Totals & Moving Averages</span><span class="card-badge">SUM() OVER · AVG() OVER</span></div>
+      <div class="card-body">
+        <div class="sql-box"><span class="sql-fn">SUM</span>(amount_allocated) <span class="sql-kw">OVER</span> (<span class="sql-kw">ORDER BY</span> allocation_date
+    <span class="sql-kw">ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW</span>) <span class="sql-kw">AS</span> cumulative_total,
+<span class="sql-fn">AVG</span>(amount_allocated) <span class="sql-kw">OVER</span> (<span class="sql-kw">ORDER BY</span> allocation_date
+    <span class="sql-kw">ROWS BETWEEN</span> 2 <span class="sql-kw">PRECEDING AND CURRENT ROW</span>) <span class="sql-kw">AS</span> moving_avg_3</div>
+        <div class="tbl-wrap"><table id="tbl-running"><tr><td class="empty">Loading...</td></tr></table></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROFESSOR ANALYTICS -->
+  <div class="section" id="sec-professor">
+    <div class="card">
+      <div class="card-head"><span class="card-title">👤 Professor-Level Analytics</span><span class="card-badge">ROW_NUMBER · NTILE · LAG · LEAD</span></div>
+      <div class="card-body">
+        <div class="sql-box"><span class="sql-fn">ROW_NUMBER()</span> <span class="sql-kw">OVER</span> (<span class="sql-kw">PARTITION BY</span> professor_id <span class="sql-kw">ORDER BY</span> submission_date),
+<span class="sql-fn">NTILE</span>(4) <span class="sql-kw">OVER</span> (<span class="sql-kw">ORDER BY</span> budget_requested) <span class="sql-kw">AS</span> budget_quartile,
+<span class="sql-fn">LAG</span>(budget, 1)  <span class="sql-kw">OVER</span> (...) <span class="sql-kw">AS</span> prev_budget,
+<span class="sql-fn">LEAD</span>(budget, 1) <span class="sql-kw">OVER</span> (...) <span class="sql-kw">AS</span> next_budget</div>
+        <div class="tbl-wrap"><table id="tbl-professor"><tr><td class="empty">Loading...</td></tr></table></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DEPT STATS -->
+  <div class="section" id="sec-dept">
+    <div class="card">
+      <div class="card-head"><span class="card-title">🏛 Department Window Stats</span><span class="card-badge">RANK · SUM() OVER</span></div>
+      <div class="card-body">
+        <div class="tbl-wrap"><table id="tbl-dept"><tr><td class="empty">Loading...</td></tr></table></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EVENT SCHEDULER -->
+  <div class="section" id="sec-events">
+    <div class="status-grid" id="event-status"></div>
+    <div class="card">
+      <div class="card-head"><span class="card-title">⏰ MySQL Event Scheduler</span><span class="card-badge">Pure DB Automation</span></div>
+      <div class="card-body">
+        <div class="sql-box"><span class="sql-kw">SET GLOBAL</span> event_scheduler = <span class="sql-str">ON</span>;
+
+<span class="sql-kw">CREATE EVENT</span> evt_auto_flag_stale_proposals
+<span class="sql-kw">ON SCHEDULE EVERY</span> 1 <span class="sql-kw">DAY DO BEGIN</span>
+    <span class="sql-kw">UPDATE</span> Proposals <span class="sql-kw">SET</span> status = <span class="sql-str">'Under Review'</span>
+    <span class="sql-kw">WHERE</span> status = <span class="sql-str">'Pending'</span> <span class="sql-kw">AND</span> submission_date < <span class="sql-fn">NOW()</span> - <span class="sql-kw">INTERVAL</span> 7 <span class="sql-kw">DAY</span>;
+<span class="sql-kw">END</span>;
+
+<span class="sql-kw">CREATE EVENT</span> evt_auto_close_fully_spent
+<span class="sql-kw">ON SCHEDULE EVERY</span> 1 <span class="sql-kw">DAY DO BEGIN</span>
+    <span class="sql-kw">UPDATE</span> Proposals p <span class="sql-kw">JOIN</span> FundAllocations fa ...
+    <span class="sql-kw">SET</span> p.status = <span class="sql-str">'Closed'</span>
+    <span class="sql-kw">WHERE</span> fa.amount_remaining <= 0;
+<span class="sql-kw">END</span>;</div>
+        <div class="tbl-wrap"><table id="tbl-events"><tr><td class="empty">Loading...</td></tr></table></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- INDEXES -->
+  <div class="section" id="sec-indexes">
+    <div class="card">
+      <div class="card-head"><span class="card-title">⚡ Database Indexes</span><span class="card-badge">Performance Optimization</span></div>
+      <div class="card-body">
+        <div class="sql-box"><span class="sql-kw">CREATE INDEX</span> idx_proposals_status <span class="sql-kw">ON</span> Proposals(status);
+<span class="sql-kw">CREATE INDEX</span> idx_proposals_reviewer_status <span class="sql-kw">ON</span> Proposals(reviewer_id, status);
+<span class="sql-kw">CREATE INDEX</span> idx_auditlog_time <span class="sql-kw">ON</span> AuditLog(changed_at);
+<span class="sql-str">-- Composite index speeds up reviewer's pending lookup</span></div>
+        <div class="tbl-wrap"><table id="tbl-indexes"><tr><td class="empty">Loading...</td></tr></table></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECURITY -->
+  <div class="section" id="sec-security">
+    <div class="card">
+      <div class="card-head"><span class="card-title">🔒 GRANT / REVOKE Security</span><span class="card-badge">Database-Level Access Control</span></div>
+      <div class="card-body">
+        <div class="sql-box"><span class="sql-kw">CREATE USER</span> <span class="sql-str">'unigrant_professor'</span>@<span class="sql-str">'localhost'</span>;
+<span class="sql-kw">GRANT SELECT, INSERT ON</span> unigrant.Proposals <span class="sql-kw">TO</span> <span class="sql-str">'unigrant_professor'</span>@<span class="sql-str">'localhost'</span>;
+<span class="sql-str">-- Professor CANNOT delete or alter schema</span>
+
+<span class="sql-kw">CREATE USER</span> <span class="sql-str">'unigrant_auditor'</span>@<span class="sql-str">'localhost'</span>;
+<span class="sql-kw">GRANT SELECT ON</span> unigrant.* <span class="sql-kw">TO</span> <span class="sql-str">'unigrant_auditor'</span>@<span class="sql-str">'localhost'</span>;
+<span class="sql-str">-- Auditor can view everything but change nothing</span></div>
+        <div id="security-cards" class="status-grid"><div class="empty">Loading...</div></div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+const fmt = n => n ? '₹' + (n/100000).toFixed(2) + 'L' : '—';
+
+function showTab(name) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('sec-' + name).classList.add('active');
+  event.target.classList.add('active');
+}
+
+function makeTable(headers, rows) {
+  if (!rows.length) return '<tr><td class="empty" colspan="99">No data available</td></tr>';
+  let h = '<tr>' + headers.map(h => `<th>${h.label}</th>`).join('') + '</tr>';
+  let b = rows.map(r => '<tr>' + headers.map(h => `<td>${h.render ? h.render(r[h.key], r) : (r[h.key] ?? '—')}</td>`).join('') + '</tr>').join('');
+  return h + b;
+}
+
+const qBadge = q => `<span class="badge badge-q${q}">Q${q}</span>`;
+const rankBadge = r => `<span class="badge badge-rank">#${r}</span>`;
+
+async function loadRankings() {
+  const rows = await (await fetch('/analytics/budget-rankings')).json();
+  document.getElementById('tbl-rankings').innerHTML = makeTable([
+    {key:'overall_rank', label:'Rank', render:v=>rankBadge(v)},
+    {key:'title', label:'Proposal'},
+    {key:'dept_name', label:'Department'},
+    {key:'budget_requested', label:'Budget', render:v=>fmt(v)},
+    {key:'dept_rank', label:'Dept Rank', render:v=>rankBadge(v)},
+    {key:'dept_dense_rank', label:'Dense Rank'},
+    {key:'percentile', label:'Percentile', render:v=>v+'%'},
+  ], rows);
+}
+
+async function loadRunning() {
+  const rows = await (await fetch('/analytics/running-totals')).json();
+  document.getElementById('tbl-running').innerHTML = makeTable([
+    {key:'title', label:'Grant'},
+    {key:'dept_name', label:'Department'},
+    {key:'amount_allocated', label:'Allocated', render:v=>fmt(v)},
+    {key:'cumulative_total', label:'Cumulative Total', render:v=>`<b>${fmt(v)}</b>`},
+    {key:'dept_cumulative', label:'Dept Cumulative', render:v=>fmt(v)},
+    {key:'running_count', label:'Running Count'},
+    {key:'moving_avg_3', label:'3-Grant Moving Avg', render:v=>v?fmt(v):'—'},
+    {key:'allocation_date', label:'Date'},
+  ], rows);
+}
+
+async function loadProfessor() {
+  const rows = await (await fetch('/analytics/professor-analytics')).json();
+  document.getElementById('tbl-professor').innerHTML = makeTable([
+    {key:'professor_name', label:'Professor'},
+    {key:'title', label:'Proposal'},
+    {key:'submission_order', label:'#', render:v=>`<b>${v}</b>`},
+    {key:'budget_requested', label:'Budget', render:v=>fmt(v)},
+    {key:'budget_quartile', label:'Quartile', render:v=>qBadge(v)},
+    {key:'prev_budget', label:'Prev Budget', render:v=>v?fmt(v):'—'},
+    {key:'next_budget', label:'Next Budget', render:v=>v?fmt(v):'—'},
+    {key:'budget_change', label:'Change', render:v=>{
+      if(!v||v===0) return '—';
+      return v>0?`<span style="color:#059669">+${fmt(v)}</span>`:`<span style="color:#DC2626">${fmt(v)}</span>`;
+    }},
+  ], rows);
+}
+
+async function loadDept() {
+  const rows = await (await fetch('/analytics/dept-window-stats')).json();
+  document.getElementById('tbl-dept').innerHTML = makeTable([
+    {key:'funding_rank', label:'Rank', render:v=>rankBadge(v)},
+    {key:'dept_name', label:'Department'},
+    {key:'total_proposals', label:'Proposals'},
+    {key:'total_requested', label:'Total Requested', render:v=>fmt(v)},
+    {key:'avg_budget', label:'Avg Budget', render:v=>fmt(v)},
+    {key:'pct_of_total_budget', label:'% of Total', render:v=>v+'%'},
+  ], rows);
+}
+
+async function loadEvents() {
+  const data = await (await fetch('/analytics/event-scheduler-status')).json();
+  const isOn = data.scheduler_enabled === 'ON';
+  document.getElementById('event-status').innerHTML = `
+    <div class="status-card"><div class="sc-label">Scheduler Status</div>
+      <div class="sc-value ${isOn?'green':'orange'}">${data.scheduler_enabled}</div>
+      <div class="sc-sub">${isOn?'Database is self-managing':'Run SET GLOBAL event_scheduler = ON'}</div></div>
+    <div class="status-card"><div class="sc-label">Active Events</div>
+      <div class="sc-value purple">${data.events.length}</div>
+      <div class="sc-sub">automated database tasks</div></div>
+    <div class="status-card"><div class="sc-label">Automation Type</div>
+      <div class="sc-value blue" style="font-size:16px">Zero Flask Involvement</div>
+      <div class="sc-sub">Pure MySQL scheduler — no cron, no Python</div></div>`;
+  document.getElementById('tbl-events').innerHTML = makeTable([
+    {key:'EVENT_NAME', label:'Event Name'},
+    {key:'EVENT_TYPE', label:'Type'},
+    {key:'INTERVAL_VALUE', label:'Interval'},
+    {key:'INTERVAL_FIELD', label:'Unit'},
+    {key:'STATUS', label:'Status', render:v=>`<span class="badge ${v==='ENABLED'?'badge-on':'badge-off'}">${v}</span>`},
+    {key:'LAST_EXECUTED', label:'Last Executed'},
+  ], data.events);
+}
+
+async function loadIndexes() {
+  const rows = await (await fetch('/analytics/index-info')).json();
+  document.getElementById('tbl-indexes').innerHTML = makeTable([
+    {key:'TABLE_NAME', label:'Table'},
+    {key:'INDEX_NAME', label:'Index Name'},
+    {key:'COLUMN_NAME', label:'Column'},
+    {key:'NON_UNIQUE', label:'Unique?', render:v=>v===0?'✅ Yes':'No'},
+    {key:'INDEX_TYPE', label:'Type'},
+  ], rows);
+}
+
+async function loadSecurity() {
+  const users = await (await fetch('/analytics/user-privileges')).json();
+  document.getElementById('security-cards').innerHTML = users.map(u => `
+    <div class="status-card">
+      <div class="sc-label">${u.role}</div>
+      <div style="font-size:13px;font-weight:700;color:#111827;margin-bottom:4px">${u.username}</div>
+      <div style="font-size:11px;color:#6B7280;margin-bottom:8px">${u.description}</div>
+      ${u.grants.map(g => `<div class="badge-priv">${g}</div>`).join('')}
+    </div>
+  `).join('');
+}
+
+// Load all
+loadRankings(); loadRunning(); loadProfessor(); loadDept(); loadEvents(); loadIndexes(); loadSecurity();
+</script>
+</body>
+</html>
